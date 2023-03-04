@@ -1,8 +1,8 @@
 # <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;What3Words Go Wrapper
-[![Go version](https://img.shields.io/github/go-mod/go-version/henrwal/w3w-go-wrapper/main?label=Go%20Version)](https://github.com/henrwal/w3w-go-wrapper)
-[![GoReportCard Badge](https://goreportcard.com/badge/github.com/henrwal/w3w-go-wrapper)](https://goreportcard.com/report/github.com/henrwal/w3w-go-wrapper)
 
 A Go module that wraps the [what3words REST API](https://docs.what3words.com/api/v3/).
+
+This is not an official What3Words repo, find a list of integrations in the [what3words developer docs](https://developer.what3words.com/public-api).
 
 # Overview
 
@@ -23,33 +23,45 @@ To use this module you’ll need an API key, please visit [https://what3words.co
 
 Quick example:
 ```go
-import w3w "github.com/henrwal/w3w-go-wrapper"
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	what3words "github.com/henrwal/w3w-go-wrapper"
+)
 
 func main() {
-    key, ok := os.LookupEnv("W3W_API_KEY")
-    if !ok {
+	// Get API KEY
+	key, ok := os.LookupEnv("W3W_API_KEY")
+	if !ok {
 		panic("env not set")
-    }
-	
-	w := w3w.NewClient(key)
-    coordinates, _ := w.ConvertToCoordinates("filled.count.soap")
+	}
+
+	// Create What3Words client for interacting with API
+	w := what3words.NewClient(key)
+	ctx := context.Background()
+
+	// Convert 3 word address to coordinates
+	coordinates, _ := w.ConvertToCoordinates(ctx, "filled.count.soap")
 	fmt.Println(coordinates)
 }
 ```
 
 ## Convert To Coordinates
 
-This function takes the words parameter as a string of 3 words `'table.book.chair'`
+This method takes the words parameter as a string of 3 words `'table.book.chair'`
 
 The returned payload from the `convert-to-coordinates` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v3/#convert-to-coordinates).
 
 ## Convert To 3 Word Address
 
-This function takes the latitude and longitude:
+This method takes the latitude and longitude:
 - 2 parameters:  `lat=0.1234`, `lng=1.5678`
 
 The returned payload from the `convert-to-3wa` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v3/#convert-to-3wa).
-
 
 ## AutoSuggest
 
@@ -89,29 +101,105 @@ The returned payload from the `available-languages` method is described in the [
 
 ## Code examples
 
-### Convert to coordinates
+### Get available languages
 ```go
-import w3w "github.com/henrwal/w3w-go-wrapper"
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	what3words "github.com/henrwal/w3w-go-wrapper"
+)
 
 func main() {
-	w := w3w.NewClient("SECRET_API_KEY")
-	words := "filled.count.soap"
-    coordinates, _ := w.ConvertToCoordinates(context.Background(), words)
-	fmt.Println(coordinates)
+	// Get API KEY
+	key, ok := os.LookupEnv("W3W_API_KEY")
+	if !ok {
+		panic("env not set")
+	}
+
+	// Create What3Words client for interacting with API
+	w := what3words.NewClient(key)
+	ctx := context.Background()
+
+	// Retrieve available languages
+	languages, err := w.AvailableLanguages(ctx)
+	if err != nil {
+		log.Fatalf("retrieving available languages: %s", err)
+	}
+
+	for _, language := range languages {
+		log.Println(language.Name)
+	}
+}
+```
+
+### Convert to coordinates
+```go
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	what3words "github.com/henrwal/w3w-go-wrapper"
+)
+
+func main() {
+	// Get API KEY
+	key, ok := os.LookupEnv("W3W_API_KEY")
+	if !ok {
+		panic("env not set")
+	}
+
+	// Create What3Words client for interacting with API
+	w := what3words.NewClient(key)
+	ctx := context.Background()
+
+	// Convert 3 word address to coordinates
+	coordinates, err := w.ConvertToCoordinates(ctx, "filled.count.soap")
+	if err != nil {
+		log.Fatalf("converting to coordinates: %s", err)
+	}
+	log.Println(coordinates)
 }
 ```
 
 ### Convert to 3 word address
 ```go
-import w3w "github.com/henrwal/w3w-go-wrapper"
-    
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	what3words "github.com/henrwal/w3w-go-wrapper"
+)
+
 func main() {
-    coordinates := Coordinates{
-		Lat: 51.520847,
-		Lng: -0.195521,
+	// Get API KEY
+	key, ok := os.LookupEnv("W3W_API_KEY")
+	if !ok {
+		panic("env not set")
 	}
-	locationResponse, _ := w.ConvertTo3wa(context.Background(), coordinates)
-	fmt.Println(locationResponse)
+
+	// Create What3Words client for interacting with API
+	w := what3words.NewClient(key)
+	ctx := context.Background()
+
+	// Convert coordinates to 3 word address
+	threeWordAddress, err := w.ConvertTo3wa(ctx, &what3words.Coordinates{
+		Lat: 51.521251,
+		Lng: -0.203607,
+	})
+	if err != nil {
+		log.Fatalf("converting to w3a: %s", err)
+	}
+	log.Println(threeWordAddress)
 }
 ```
 
