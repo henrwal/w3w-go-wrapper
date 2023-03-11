@@ -1,8 +1,11 @@
 # <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;What3Words Go Wrapper
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/henrwal/w3w-go-wrapper)](https://goreportcard.com/report/github.com/henrwal/w3w-go-wrapper)
+[![Go Reference](https://pkg.go.dev/badge/github.com/henrwal/w3w-go-wrapper.svg)](https://pkg.go.dev/github.com/henrwal/w3w-go-wrapper)
+
 A Go module that wraps the [what3words REST API](https://docs.what3words.com/api/v3/).
 
-This is not an official What3Words repo, find a list of integrations in the [what3words developer docs](https://developer.what3words.com/public-api).
+> This is not an official What3Words repo, find a list of integrations in the [what3words developer docs](https://developer.what3words.com/public-api).
 
 # Overview
 
